@@ -19,7 +19,7 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Executive-Lens">
       <MainLayout>
         <Routes>
           <Route path="/" element={<DashboardView />} />
