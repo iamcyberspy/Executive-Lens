@@ -1,12 +1,22 @@
+import { useState } from "react";
 import { motion } from "motion/react";
 import { UserPlus, Filter, ChevronDown, ChevronLeft, ChevronRight, UserCheck, MapPin, Clock, Search } from "lucide-react";
-import { EMPLOYEES } from "@/src/constants/data";
+import { EMPLOYEES as INITIAL_EMPLOYEES } from "@/src/constants/data";
 import { cn } from "@/src/lib/utils";
 import { Link } from "react-router-dom";
+import { OnboardingModal } from "../components/OnboardingModal";
 
 const CATEGORIES = ["All Teams", "Engineering", "Design", "Marketing", "HR", "Legal"];
 
 export function DirectoryView() {
+  const [employees, setEmployees] = useState(INITIAL_EMPLOYEES);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleAddEmployee = (newEmployee: any) => {
+    setEmployees([newEmployee, ...employees]);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="space-y-10 max-w-7xl mx-auto">
       {/* Header */}
@@ -19,6 +29,7 @@ export function DirectoryView() {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            onClick={() => setIsModalOpen(true)}
             className="bg-primary text-white px-6 py-2 rounded-lg flex items-center gap-2 shadow-md shadow-primary/10 hover:bg-primary-container transition-all font-bold text-sm tracking-wide"
           >
             <UserPlus size={16} />
@@ -53,7 +64,7 @@ export function DirectoryView() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {EMPLOYEES.map((emp, i) => (
+        {employees.map((emp, i) => (
           <motion.div 
             key={emp.id}
             initial={{ opacity: 0, y: 10 }}
@@ -73,7 +84,7 @@ export function DirectoryView() {
               <p className="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest mt-1">{emp.role}</p>
 
               <div className="mt-4 flex flex-wrap justify-center gap-1.5">
-                {emp.tags?.slice(0, 2).map((tag) => (
+                {emp.tags?.slice(0, 2).map((tag: string) => (
                   <span key={tag} className="text-[9px] bg-surface-container text-on-surface-variant/60 px-2 py-0.5 rounded font-bold uppercase tracking-tight">
                     {tag}
                   </span>
@@ -92,7 +103,10 @@ export function DirectoryView() {
         ))}
 
         {/* Add Member Card */}
-        <div className="border-2 border-dashed border-outline-variant rounded-2xl flex flex-col items-center justify-center p-8 group cursor-pointer hover:bg-white hover:border-primary transition-all">
+        <div 
+          onClick={() => setIsModalOpen(true)}
+          className="border-2 border-dashed border-outline-variant rounded-2xl flex flex-col items-center justify-center p-8 group cursor-pointer hover:bg-white hover:border-primary transition-all shadow-sm"
+        >
           <div className="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center mb-3 text-on-surface-variant/40 group-hover:bg-primary group-hover:text-white transition-all">
             <UserPlus size={20} />
           </div>
@@ -102,7 +116,7 @@ export function DirectoryView() {
 
       {/* Pagination */}
       <footer className="mt-12 flex items-center justify-between border-t border-outline-variant pt-8">
-        <p className="text-xs font-medium text-on-surface-variant/40">Showing {EMPLOYEES.length} of 1,248 results</p>
+        <p className="text-xs font-medium text-on-surface-variant/40">Showing {employees.length} of 1,248 results</p>
         <div className="flex items-center gap-1">
           <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white font-bold text-xs shadow">1</button>
           <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-on-surface-variant hover:text-primary font-bold text-xs transition-colors">2</button>
@@ -111,6 +125,12 @@ export function DirectoryView() {
           <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-on-surface-variant hover:text-primary font-bold text-xs transition-colors text-right">24</button>
         </div>
       </footer>
+
+      <OnboardingModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleAddEmployee}
+      />
     </div>
   );
 }
